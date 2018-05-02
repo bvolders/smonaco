@@ -9,9 +9,11 @@ lazy val docs =
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
+        library.sttp,
         library.scalaCheck % Test,
-        library.utest      % Test
-      )
+        library.utest % Test
+      ),
+      libraryDependencies ++= library.circe
     )
 
 // *****************************************************************************
@@ -20,12 +22,21 @@ lazy val docs =
 
 lazy val library =
   new {
+
     object Version {
       val scalaCheck = "1.13.5"
-      val utest      = "0.6.4"
+      val utest = "0.6.4"
+      val circeVersion = "0.9.3"
     }
+
+    val circe = Seq(
+      "io.circe" %% "circe-core",
+      "io.circe" %% "circe-generic",
+      "io.circe" %% "circe-parser"
+    ).map(_ % Version.circeVersion)
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
-    val utest      = "com.lihaoyi"    %% "utest"      % Version.utest
+    val utest = "com.lihaoyi" %% "utest" % Version.utest
+    val sttp = "com.softwaremill.sttp" %% "core" % "1.1.13"
   }
 
 // *****************************************************************************
@@ -34,7 +45,7 @@ lazy val library =
 
 lazy val settings =
   commonSettings ++
-  scalafmtSettings
+    scalafmtSettings
 
 lazy val commonSettings =
   Seq(
@@ -56,8 +67,8 @@ lazy val commonSettings =
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
     testFrameworks += new TestFramework("utest.runner.Framework"),
-    wartremoverWarnings in (Compile, compile) ++= Warts.unsafe
-)
+    wartremoverWarnings in(Compile, compile) ++= Warts.unsafe
+  )
 
 lazy val scalafmtSettings =
   Seq(
