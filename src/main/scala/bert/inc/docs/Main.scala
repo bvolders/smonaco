@@ -23,7 +23,7 @@ package bert.inc.docs
 
 import java.io.FileReader
 
-import javax.script.{Compilable, Invocable, ScriptEngine, ScriptEngineManager}
+import javax.script.{ Compilable, Invocable, ScriptEngine, ScriptEngineManager }
 
 import scala.collection.immutable.Range
 import java.util.concurrent.TimeUnit
@@ -31,37 +31,38 @@ import java.util.concurrent.Executors
 import javax.script.ScriptException
 import java.util.concurrent.Callable
 
-object Main extends App {
-  val executor = Executors.newCachedThreadPool
+object Main {
+  val executor    = Executors.newCachedThreadPool
   val ENGINE_NAME = "nashorn"
   val engine = new ScriptEngineManager()
     .getEngineByName(ENGINE_NAME)
     .asInstanceOf[ScriptEngine with Invocable with Compilable]
 
-  engine.eval("self=this;global=this;")
+  def main(args: Array[String]): Unit = {
 
-  engine.eval("load('classpath:monaco.js')")
-  Thread.sleep(1000)
-  engine.eval("load('classpath:template.js')")
+    engine.eval("self=this;global=this;")
+    engine.eval("load('classpath:monaco.js')")
+    Thread.sleep(1000)
+    engine.eval("load('classpath:template.js')")
 
-
-
-  val addition = new Callable[Object]() {
-    override def call: Object = try {
-      engine.eval("onLoad();")
-      engine.eval("print('is init function' + schema.init instanceof Function);")
-    } catch {
-      case e: ScriptException =>
-        throw new RuntimeException(e)
+    val addition = new Callable[Object]() {
+      override def call: Object =
+        try {
+          engine.eval("onLoad();")
+          engine.eval("print('is init function' + schema.init instanceof Function);")
+        } catch {
+          case e: ScriptException =>
+            throw new RuntimeException(e)
+        }
     }
-  }
 
-  Range(1,10).foreach{ _ =>
-    Thread.sleep(500)
-    executor.submit(addition)
-    Thread.sleep(100)
-  }
+    Range(1, 10).foreach { _ =>
+      Thread.sleep(500)
+      executor.submit(addition)
+      Thread.sleep(100)
+    }
 
-  executor.awaitTermination(20, TimeUnit.SECONDS)
-  executor.shutdownNow
+    executor.awaitTermination(20, TimeUnit.SECONDS)
+    executor.shutdownNow
+  }
 }
