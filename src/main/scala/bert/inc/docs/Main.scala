@@ -59,7 +59,7 @@ object Main extends App {
 
   val addition = new Callable[Object]() {
     override def call: Object = try {
-      //engine.eval("onLoad();")
+      engine.eval("onLoad();")
       engine.eval("print('test');")
       engine.eval("print('is init function' + schema.init instanceof Function);")
     } catch {
