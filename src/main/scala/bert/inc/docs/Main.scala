@@ -39,17 +39,6 @@ object Main extends App {
     .asInstanceOf[ScriptEngine with Invocable with Compilable]
 
   engine.eval("self=this;global=this;")
-  /*engine.eval(
-    """
-      try {
-        load('classpath:monaco.js');
-      } catch (e) {
-        print(e);
-      }
-    """.stripMargin)*/
-
-
-
 
   engine.eval("load('classpath:monaco.js')")
   Thread.sleep(1000)
@@ -60,7 +49,6 @@ object Main extends App {
   val addition = new Callable[Object]() {
     override def call: Object = try {
       engine.eval("onLoad();")
-      engine.eval("print('test');")
       engine.eval("print('is init function' + schema.init instanceof Function);")
     } catch {
       case e: ScriptException =>
